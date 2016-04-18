@@ -1,5 +1,5 @@
 ﻿/*
- *  Copyright (c) 2014-2015, Facebook, Inc.
+ *  Copyright (c) 2014-Present, Facebook, Inc.
  *  All rights reserved.
  *
  *  This source code is licensed under the BSD-style license found in the
@@ -23,6 +23,8 @@ namespace React
 	/// </summary>
 	public class VroomJsEngine : JsEngineBase
 	{
+		private bool _disposed;
+
 		/// <summary>
 		/// The VroomJs engine. One engine is shared for the whole app, and separate contexts are
 		/// used for each instance of this class.

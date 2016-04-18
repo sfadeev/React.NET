@@ -1,5 +1,5 @@
 ﻿/*
- *  Copyright (c) 2014-2015, Facebook, Inc.
+ *  Copyright (c) 2014-Present, Facebook, Inc.
  *  All rights reserved.
  *
  *  This source code is licensed under the BSD-style license found in the
@@ -26,11 +26,6 @@ namespace React
 	/// </summary>
 	public class ReactEnvironment : IReactEnvironment, IDisposable
 	{
-		/// <summary>
-		/// Format string used for React component container IDs
-		/// </summary>
-		protected const string CONTAINER_ELEMENT_NAME = "react{0}";
-
 		/// <summary>
 		/// JavaScript variable set when user-provided scripts have been loaded
 		/// </summary>
@@ -75,10 +70,6 @@ namespace React
 		/// </summary>
 		protected readonly Lazy<IJsEngine> _engineFromPool;
 
-		/// <summary>
-		/// Number of components instantiated in this environment
-		/// </summary>
-		protected int _maxContainerId = 0;
 		/// <summary>
 		/// List of all components instantiated in this environment
 		/// </summary>
@@ -265,16 +256,15 @@ namespace React
 		/// <param name="componentName">Name of the component</param>
 		/// <param name="props">Props to use</param>
 		/// <param name="containerId">ID to use for the container HTML tag. Defaults to an auto-generated ID</param>
+		/// <param name="clientOnly">True if server-side rendering will be bypassed. Defaults to false.</param>
 		/// <returns>The component</returns>
-		public virtual IReactComponent CreateComponent<T>(string componentName, T props, string containerId = null)
+		public virtual IReactComponent CreateComponent<T>(string componentName, T props, string containerId = null, bool clientOnly = false)
 		{
-			EnsureUserScriptsLoaded();
-			if (string.IsNullOrEmpty(containerId))
+			if (!clientOnly)
 			{
-				_maxContainerId++;
-				containerId = string.Format(CONTAINER_ELEMENT_NAME, _maxContainerId);	
+				EnsureUserScriptsLoaded();
 			}
-			
+
 			var component = new ReactComponent(this, _config, componentName, containerId)
 			{
 				Props = props
@@ -287,14 +277,18 @@ namespace React
 		/// Renders the JavaScript required to initialise all components client-side. This will 
 		/// attach event handlers to the server-rendered HTML.
 		/// </summary>
+		/// <param name="clientOnly">True if server-side rendering will be bypassed. Defaults to false.</param>
 		/// <returns>JavaScript for all components</returns>
-		public virtual string GetInitJavaScript()
+		public virtual string GetInitJavaScript(bool clientOnly = false)
 		{
 			var fullScript = new StringBuilder();
 			
 			// Propagate any server-side console.log calls to corresponding client-side calls.
-			var consoleCalls = Execute<string>("console.getCalls()");
-			fullScript.Append(consoleCalls);
+			if (!clientOnly)
+			{
+				var consoleCalls = Execute<string>("console.getCalls()");
+				fullScript.Append(consoleCalls);
+			}
 			
 			foreach (var component in _components)
 			{

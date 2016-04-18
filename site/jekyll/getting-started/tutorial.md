@@ -66,8 +66,8 @@ Replace the contents of the new view file with the following:
 </head>
 <body>
 	<div id="content"></div>
-	<script src="https://fb.me/react-0.14.0.min.js"></script>
-	<script src="https://fb.me/react-dom-0.14.0.min.js"></script>
+	<script src="https://fb.me/react-15.0.1.js"></script>
+	<script src="https://fb.me/react-dom-15.0.1.js"></script>
 	<script src="@Url.Content("~/Scripts/Tutorial.jsx")"></script>
 </body>
 </html>
@@ -236,8 +236,8 @@ Markdown is a simple way to format your text inline. For example, surrounding te
 First, add the third-party **Showdown** library to your application. This is a JavaScript library which takes Markdown text and converts it to raw HTML. We will add it via NuGet (search for "Showdown" and install it, similar to how you installed ReactJS.NET earlier) and reference the script tag in your view:
 
 ```html{3}
-<script src="https://fb.me/react-0.14.0.min.js"></script>
-<script src="https://fb.me/react-dom-0.14.0.min.js"></script>
+<script src="https://fb.me/react-15.0.1.js"></script>
+<script src="https://fb.me/react-dom-15.0.1.js"></script>
 <script src="@Url.Content("~/Scripts/showdown.min.js")"></script>
 <script src="@Url.Content("~/Scripts/Tutorial.jsx")"></script>
 ```
@@ -488,7 +488,7 @@ var CommentBox = React.createClass({
 `getInitialState()` executes exactly once during the lifecycle of the component and sets up the initial state of the component.
 
 #### Updating state
-When the component is first created, we want to GET some JSON from the server and update the state to reflect the latest data. We'll use the standard XMLHttpRequest API to retrieve the data. If you need support for old browsers (mainly old Internet Explorer), you can use an AJAX library or a multipurpose library such as jQuery.
+When the component is first created, we want to GET some JSON from the server and update the state to reflect the latest data. We'll use the standard XMLHttpRequest API to retrieve the data. If you need support for old browsers (mainly old Internet Explorer), you can use an AJAX library or a multipurpose library such as jQuery. `componentWillMount()` executes immediately and only once before the rendering occurs. In the following example, `componentWillMount()` loads the data from our XMLHttpRequest and assigns it to the `data` variable. Finally, it sets the `data` variable in state, using `setState()`.
 
 ```javascript{6-12}
 var CommentBox = React.createClass({
@@ -516,7 +516,7 @@ var CommentBox = React.createClass({
 });
 ```
 
-Here, `componentDidMount` is a method called automatically by React when a component is rendered. The key to dynamic updates is the call to `this.setState()`. We replace the old array of comments with the new one from the server and the UI automatically updates itself. Because of this reactivity, it is only a minor change to add live updates. We will use simple polling here but you could easily use [SignalR](http://signalr.net/) or other technologies.
+Here, `componentDidMount()` is a method called automatically by React *after* the component is rendered. So, by moving the XMLHttpRequest call from `componentWillMount()`, which is executed only once *before* rendering, to a function called `loadCommentsFromServer()`, we can then call it multiple times from `componentDidMount()` at a set interval to check for any updates to the comments. The key to dynamic updates is the call to `this.setState()`. We replace the old array of comments with the new one from the server and the UI automatically updates itself. Because of this reactivity, it is only a minor change to add live updates. We will use simple polling here but you could easily use [SignalR](http://signalr.net/) or other technologies.
 
 ```javascript{2,15-16,30}
 var CommentBox = React.createClass({
@@ -853,8 +853,8 @@ Now that the bundle has been registered, we need to reference it from the view:
 </head>
 <body>
 	<div id="content"></div>
-	<script src="https://fb.me/react-0.14.0.min.js"></script>
-	<script src="https://fb.me/react-dom-0.14.0.min.js"></script>
+	<script src="https://fb.me/react-15.0.1.js"></script>
+	<script src="https://fb.me/react-dom-15.0.1.js"></script>
 	@Scripts.Render("~/bundles/main")
 	@Html.ReactInitJavaScript()
 </body>
@@ -940,8 +940,8 @@ In the view, we will accept the list of comments as the model, and use `Html.Rea
 		submitUrl = Url.Action("AddComment"),
 		pollInterval = 2000,
 	})
-	<script src="https://fb.me/react-0.14.0.min.js"></script>
-	<script src="https://fb.me/react-dom-0.14.0.min.js"></script>
+	<script src="https://fb.me/react-15.0.1.js"></script>
+	<script src="https://fb.me/react-dom-15.0.1.js"></script>
 	<script src="@Url.Content("~/Scripts/showdown.min.js")"></script>
 	<script src="@Url.Content("~/Scripts/Tutorial.jsx")"></script>
 	@Html.ReactInitJavaScript()

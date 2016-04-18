@@ -1,5 +1,5 @@
 ﻿/*
- *  Copyright (c) 2014-2015, Facebook, Inc.
+ *  Copyright (c) 2014-Present, Facebook, Inc.
  *  All rights reserved.
  *
  *  This source code is licensed under the BSD-style license found in the
@@ -39,7 +39,8 @@ namespace React.Tests.Mvc
 			environment.Setup(x => x.CreateComponent(
 				"ComponentName",
 				new {},
-				null
+				null,
+				false
 			)).Returns(component.Object);
 
 			var result = HtmlHelperExtensions.ReactWithInit(
@@ -64,7 +65,8 @@ namespace React.Tests.Mvc
 			environment.Setup(x => x.CreateComponent(
 				"ComponentName",
 				new {},
-				null
+				null,
+				true
 			)).Returns(component.Object);
 
 			var result = HtmlHelperExtensions.React(
@@ -86,7 +88,8 @@ namespace React.Tests.Mvc
 			environment.Setup(x => x.CreateComponent(
 				"ComponentName",
 				new { },
-				null
+				null,
+				true
 			)).Returns(component.Object);
 
 			var result = HtmlHelperExtensions.React(

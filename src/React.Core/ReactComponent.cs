@@ -1,5 +1,5 @@
 ﻿/*
- *  Copyright (c) 2014-2015, Facebook, Inc.
+ *  Copyright (c) 2014-Present, Facebook, Inc.
  *  All rights reserved.
  *
  *  This source code is licensed under the BSD-style license found in the
@@ -7,6 +7,7 @@
  *  of patent rights can be found in the PATENTS file in the same directory.
  */
 
+using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using JavaScriptEngineSwitcher.Core;
@@ -38,6 +39,16 @@ namespace React
 		protected readonly IReactSiteConfiguration _configuration;
 
 		/// <summary>
+		/// Raw props for this component
+		/// </summary>
+		protected object _props;
+
+		/// <summary>
+		/// JSON serialized props for this component
+		/// </summary>
+		protected string _serializedProps;
+
+		/// <summary>
 		/// Gets or sets the name of the component
 		/// </summary>
 		public string ComponentName { get; set; }
@@ -60,7 +71,18 @@ namespace React
 		/// <summary>
 		/// Gets or sets the props for this component
 		/// </summary>
-		public object Props { get; set; }
+		public object Props
+		{
+			get { return _props; }
+			set
+			{
+				_props = value;
+				_serializedProps = JsonConvert.SerializeObject(
+					value,
+					_configuration.JsonSerializerSettings
+				);
+			}
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ReactComponent"/> class.
@@ -75,7 +97,7 @@ namespace React
 			_environment = environment;
 			_configuration = configuration;
 			ComponentName = componentName;
-			ContainerId = containerId;
+			ContainerId = string.IsNullOrEmpty(containerId) ? GenerateId() : containerId;
 			ContainerTag = "div";
 		}
 
@@ -88,7 +110,11 @@ namespace React
 		/// <returns>HTML</returns>
 		public virtual string RenderHtml(bool renderContainerOnly = false, bool renderServerOnly = false)
 		{
-			EnsureComponentExists();
+			if (!renderContainerOnly)
+			{
+				EnsureComponentExists();
+			}
+
 			try
 			{
 				var html = string.Empty;
@@ -165,11 +191,10 @@ namespace React
 		/// <returns>JavaScript for component initialisation</returns>
 		protected virtual string GetComponentInitialiser()
 		{
-			var encodedProps = JsonConvert.SerializeObject(Props, _configuration.JsonSerializerSettings); // SerializeObject accepts null settings
 			return string.Format(
 				"React.createElement({0}, {1})",
 				ComponentName,
-				encodedProps
+				_serializedProps
 			);
 		}
 
@@ -187,6 +212,15 @@ namespace React
 					componentName
 				));
 			}
+		}
+
+		/// <summary>
+		/// Generates a unique identifier for this component, if one was not passed in.
+		/// </summary>
+		/// <returns></returns>
+		private static string GenerateId()
+		{
+			return "react_" + Guid.NewGuid().ToShortGuid();
 		}
 	}
 }

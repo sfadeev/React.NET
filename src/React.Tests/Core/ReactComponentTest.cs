@@ -1,5 +1,5 @@
 ﻿/*
- *  Copyright (c) 2014-2015, Facebook, Inc.
+ *  Copyright (c) 2014-Present, Facebook, Inc.
  *  All rights reserved.
  *
  *  This source code is licensed under the BSD-style license found in the
@@ -173,5 +173,17 @@ namespace React.Tests.Core
 			}
 			Assert.AreEqual(expected, isValid);
 		}
+
+
+		[Test]
+		public void GeneratesContainerIdIfNotProvided()
+		{
+			var environment = new Mock<IReactEnvironment>();
+			var config = new Mock<IReactSiteConfiguration>();
+
+			var component = new ReactComponent(environment.Object, config.Object, "Foo", null);
+			StringAssert.StartsWith("react_", component.ContainerId);
+		}
+
 	}
 }
